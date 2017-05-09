@@ -8208,7 +8208,7 @@ type json_str =
   { str : string ; loc : loc}
 
 type json_flo  =
-  { str : string ; loc : loc}
+  { flo : string ; loc : loc}
 type json_array =
   { content : t array ; 
     loc_start : loc ; 
@@ -8403,7 +8403,7 @@ let test   ?(fail=(fun () -> ())) key
         end      
        | True _, `Bool cb -> cb true
        | False _, `Bool cb  -> cb false 
-       | Flo {str = s} , `Flo cb  -> cb s 
+       | Flo {flo = s} , `Flo cb  -> cb s 
        | Obj {map = b} , `Obj cb -> cb b 
        | Arr {content}, `Arr cb -> cb content 
        | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
@@ -9092,7 +9092,7 @@ let rec parse_json lexbuf =
     | True -> True lexbuf.lex_start_p
     | False -> False lexbuf.lex_start_p
     | Null -> Null lexbuf.lex_start_p
-    | Number s ->  Flo {str = s; loc = lexbuf.lex_start_p}  
+    | Number s ->  Flo {flo = s; loc = lexbuf.lex_start_p}  
     | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf
@@ -9245,7 +9245,7 @@ let suites =
       let v1 = parse_json_from_string {| [ 1, 3 ]|} in
       let test (v : Ext_json_types.t) = 
         match v with 
-        | Arr { content = [| Flo {str = "1"} ; Flo { str = "3"} |] } -> ()
+        | Arr { content = [| Flo {flo = "1"} ; Flo { flo = "3"} |] } -> ()
         | _ -> OUnit.assert_failure "trailing comma array" in 
       test v ;
       test v1

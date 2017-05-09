@@ -61,6 +61,7 @@ let print_rule oc ~description ?restat ?depfile ~command   name  =
   output_string oc "  description = " ; output_string oc description; output_string oc "\n"
 
 
+(** allocate an unique name for such rule*)
 let define
     ~command
     ?depfile
@@ -68,17 +69,21 @@ let define
     ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
     name
   =
+  let rule_name = ask_name name  in 
   let rec self = {
     used  = false;
-    rule_name = ask_name name ;
+    rule_name ;
     name = fun oc ->
       if not self.used then
         begin
-          print_rule oc ~description ?depfile ?restat ~command name;
+          print_rule oc ~description ?depfile ?restat ~command rule_name;
           self.used <- true
         end ;
-      self.rule_name
+      rule_name
   } in self
+
+
+
 
 
 let build_ast_and_deps =
@@ -165,9 +170,16 @@ let build_cmi =
     ~depfile:"${in}.d"
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
-let reset () = 
-  rule_id := 0;
-  rule_names := String_set.empty;
+
+(* a snapshot of rule_names environment*)
+let built_in_rule_names = !rule_names 
+let built_in_rule_id = !rule_id
+
+let reset (custom_rules : string String_map.t) = 
+
+  rule_id := built_in_rule_id;
+  rule_names := built_in_rule_names;
+
   build_ast_and_deps.used <- false ;
   build_ast_and_deps_from_reason_impl.used <- false ;  
   build_ast_and_deps_from_reason_intf.used <- false ;
@@ -177,6 +189,9 @@ let reset () =
   build_ml_from_mll.used <- false ; 
   build_cmj_js.used <- false;
   build_cmj_cmi_js.used <- false ;
-  build_cmi.used <- false 
+  build_cmi.used <- false ;
+  String_map.mapi (fun name command -> 
+      define ~command name
+    ) custom_rules
 
 
