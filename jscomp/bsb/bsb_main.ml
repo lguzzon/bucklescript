@@ -193,7 +193,6 @@ let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cw
       end 
   end
 
-
 let bsb_main_flags : (string * Arg.spec * string) list=
   [
     "-color", Arg.Set color_enabled,
@@ -212,6 +211,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
+    "-init", Arg.String Bsb_init.init_sample_project,
+    " Init sample project to get started"
   ]
 
 

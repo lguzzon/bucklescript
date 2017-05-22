@@ -151,6 +151,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_cmd_tests\
 	ounit_ffi_error_debug_test\
 	ounit_unicode_tests\
+	ounit_bsb_regex_tests\
 	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
@@ -299,7 +300,9 @@ BSB_SRCS= bsb_config \
 	bsb_file\
 	bsb_config_types\
 	bsb_config_parse\
-	bsb_unix
+	bsb_unix\
+	bsb_regex\
+	bsb_init
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main
@@ -451,7 +454,7 @@ bin/all_ounit_tests.ml:./bin/bspack.exe
 
 
 bin/all_ounit_tests.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
-	ocamloptp -I +compiler-libs ocamlcommon.cmxa -P a -g -I bin -w -a unix.cmxa $^ -o $@
+	ocamloptp -I +compiler-libs ocamlcommon.cmxa -P a -g -I bin -w -a unix.cmxa str.cmxa $^ -o $@
 
 test:bin/all_ounit_tests.exe
 	$^ && ocamlprof bin/all_ounit_tests.ml > bin/all_ounit_tests.i.ml &&	rm ocamlprof.dump
